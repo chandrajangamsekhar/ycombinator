@@ -2,8 +2,9 @@
 
 module YcScraper
   class CompanyListService < BaseService
-    def fetch_companies(limit = 10, offset = 0)
-      parsed_page = fetch_page("#{BASE_URL}/companies")
+    def fetch_companies(filters, limit = 10, offset = 0)
+      query_string = build_query_string(filters)
+      parsed_page = fetch_page("#{BASE_URL}/companies?#{query_string}")
       companies = []
 
       parsed_page.css('._section_86jzd_146 ._company_86jzd_338').drop(offset).each do |company_card|
@@ -22,6 +23,12 @@ module YcScraper
       end
 
       companies
+    end
+
+    private
+
+    def build_query_string(filters)
+      filters.map { |key, value| "#{key}=#{value}" }.join('&')
     end
   end
 end
